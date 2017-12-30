@@ -1,0 +1,16 @@
+- set_fact:
+    spark_binary: "spark-{{spark_version}}-bin-hadoop{{hadoop_version}}.tgz"
+
+- name: creating Spark dir
+  file: path={{item}} state=directory
+  with_items:
+    - "{{ spark_install_dir }}"
+
+- name: downloading Spark
+  get_url: url="{{spark_mirror_base}}/spark-{{spark_version}}/{{spark_binary}}" dest=/tmp force=True
+
+- name: unarchiving
+  shell: "tar -xzf /tmp/{{spark_binary}} -C {{ spark_install_dir }} --strip-components 1"
+
+- name: setting SPARK_HOME
+  lineinfile: dest=/etc/environment line="SPARK_HOME={{ spark_install_dir }}"

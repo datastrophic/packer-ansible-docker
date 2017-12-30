@@ -1,0 +1,18 @@
+- name: adding mesosphere repository key
+  apt_key: id=E56151BF keyserver=keyserver.ubuntu.com state=present
+
+- name: adding mesosphere repository
+  apt_repository: repo='deb http://repos.mesosphere.com/{{ distro }} {{ distro_codename }} main' state=present
+
+- name: installing mesos package
+  apt: name="mesos={{ mesos_version }}" state=present update_cache=yes
+
+- name: stopping running services
+  service: name={{ item }} state=stopped enabled=false
+  with_items:
+    - mesos-master
+    - mesos-slave
+  ignore_errors: true
+
+- name: setting MESOS_NATIVE_JAVA_LIBRARY
+  lineinfile: dest=/etc/environment line="MESOS_NATIVE_JAVA_LIBRARY=/usr/local/lib/libmesos.so"

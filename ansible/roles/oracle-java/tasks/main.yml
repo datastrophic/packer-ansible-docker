@@ -1,0 +1,13 @@
+- name: adding Java repository to sources
+  apt_repository: repo='ppa:webupd8team/java' state=present
+
+- name: autoaccepting license for Java
+  action: shell echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
+
+- name: installing Java
+  apt: pkg=oracle-java8-installer state=present install_recommends=yes update_cache=yes
+
+- name: setting Java defaults
+  apt: pkg=oracle-java8-set-default state=present install_recommends=yes
+
+- shell: update-alternatives --auto java

@@ -1,0 +1,37 @@
+{
+  "builders": [
+    {
+      "type": "docker",
+      "image": "{{user `distro`}}:{{user `distro_version`}}",
+      "commit": "true"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "apt-get -y update",
+        "apt-get install -y software-properties-common",
+        "apt-add-repository ppa:ansible/ansible",
+        "apt-get -y update",
+        "apt-get install -y ansible sudo"
+      ]
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "docker-tag",
+        "repository": "datastrophic/base-image",
+        "tag": "{{user `base_version`}}"
+      }
+    ],
+    [
+      {
+        "type": "docker-tag",
+        "repository": "datastrophic/base-image",
+        "tag": "latest"
+      }
+    ]
+  ]
+}

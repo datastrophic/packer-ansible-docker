@@ -1,0 +1,34 @@
+{
+  "builders": [
+    {
+      "type": "docker",
+      "image": "datastrophic/base-image:{{user `base_version`}}",
+      "pull": false,
+      "commit": "true"
+    }
+  ],
+  "provisioners": [
+    {
+  	  "type": "ansible-local",
+  	  "playbook_dir": "./ansible",
+      "role_paths": "./ansible/roles",
+  	  "playbook_file": "./ansible/playbooks/oracle-java.yml"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "docker-tag",
+        "repository": "datastrophic/oracle-java",
+        "tag": "{{user `java_version`}}"
+      }
+    ],
+    [
+      {
+        "type": "docker-tag",
+        "repository": "datastrophic/oracle-java",
+        "tag": "latest"
+      }
+    ]
+  ]
+}

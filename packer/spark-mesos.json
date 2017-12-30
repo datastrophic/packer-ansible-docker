@@ -1,0 +1,35 @@
+{
+  "builders": [
+    {
+      "type": "docker",
+      "image": "datastrophic/spark-base:spark-{{user `spark_version`}}-hadoop{{user `hadoop_version`}}",
+      "pull": false,
+      "commit": "true"
+    }
+  ],
+  "provisioners": [
+    {
+  	  "type": "ansible-local",
+  	  "playbook_dir": "./ansible",
+      "role_paths": "./ansible/roles",
+  	  "playbook_file": "./ansible/playbooks/mesos-base.yml",
+      "extra_arguments": ["--extra-vars \"distro={{user `distro`}} distro_codename={{user `distro_codename`}} mesos_version={{user `mesos_version`}}\""]
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "docker-tag",
+        "repository": "datastrophic/spark-mesos",
+        "tag": "spark-{{user `spark_version`}}-hadoop{{user `hadoop_version`}}-mesos{{user `mesos_version`}}"
+      }
+    ],
+    [
+      {
+        "type": "docker-tag",
+        "repository": "datastrophic/spark-mesos",
+        "tag": "latest"
+      }
+    ]
+  ]
+}

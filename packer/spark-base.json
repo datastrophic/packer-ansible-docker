@@ -1,0 +1,38 @@
+{
+  "builders": [
+    {
+      "type": "docker",
+      "image": "datastrophic/oracle-java:{{user `java_version`}}",
+      "pull": false,
+      "commit": "true",
+      "changes": [
+        "EXPOSE 4040"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+  	  "type": "ansible-local",
+  	  "playbook_dir": "./ansible",
+      "role_paths": "./ansible/roles",
+  	  "playbook_file": "./ansible/playbooks/spark-base.yml",
+      "extra_arguments": ["--extra-vars \"spark_version={{user `spark_version`}} hadoop_version={{user `hadoop_version`}}\""]
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "docker-tag",
+        "repository": "datastrophic/spark-base",
+        "tag": "spark-{{user `spark_version`}}-hadoop{{user `hadoop_version`}}"
+      }
+    ],
+    [
+      {
+        "type": "docker-tag",
+        "repository": "datastrophic/spark-base",
+        "tag": "latest"
+      }
+    ]
+  ]
+}
